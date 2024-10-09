@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Voice</title>
+</head>
+<body>
+    <div>
+        <input id="input" placeholder="Enter text here">
+        <select id="voices"></select>
+        <button onclick="speak()">Speak</button>
+    </div>
+    <script>
+        let voices = [];
+
+        function populateVoices() {
+            voices = speechSynthesis.getVoices();
+            const voicesDropdown = document.getElementById('voices');
+            voicesDropdown.innerHTML = voices
+                .map(voice => `<option value="${voice.name}">${voice.name} (${voice.lang})</option>`)
+                .join('');
+        }
+
+        function speak() {
+            const text = document.getElementById("input").value;
+            const utterance = new SpeechSynthesisUtterance(text);
+            const selectedVoiceName = document.getElementById('voices').value;
+            const selectedVoice = voices.find(voice => voice.name === selectedVoiceName);
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+            speechSynthesis.speak(utterance);
+        }
+
+        populateVoices();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoices;
+        }
+    </script>
+</body>
+</html>
